@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"Biocad/app/service"
 	"github.com/gin-gonic/gin"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -13,27 +13,18 @@ func FileUpload(c *gin.Context) {
 	if err != nil {
 		log.Println("c.Req.FromFile" + err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Smth wrong in get file on server: " + err.Error(),
+			"message": "Smth wrong in get file on server",
 		})
 		return
 	}
 
 	filename := header.Filename
-	out, err := os.Create("app/public/" + filename)
-	if err != nil {
-		log.Println("os.Create" + err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"messsage": "Can't create file : " + err.Error(),
-		})
-		return
-	}
-	defer out.Close()
 
-	_, err = io.Copy(out, file)
+	err = service.UploadFile(filename, file)
 	if err != nil {
-		log.Println("io.Copy" + err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"messsage": "internal server error: " + err.Error(),
+		log.Println("Upload file: " + err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Smth wrong in get file on server",
 		})
 		return
 	}
