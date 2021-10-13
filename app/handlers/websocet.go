@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
-	"net/http"
 )
 
 var upgrader = websocket.Upgrader{
@@ -11,10 +11,11 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func GetPage(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+func GetPage(c *gin.Context) {
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Println(err.Error())
+		return
 	}
 
 	for {

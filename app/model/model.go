@@ -1,6 +1,6 @@
 package model
 
 type Data struct {
-	Header string
-	Data   []map[float64]float64
+	Type string `json:"type"`
+	Name string `json:"name"`
 }
