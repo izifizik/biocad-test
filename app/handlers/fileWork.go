@@ -20,16 +20,16 @@ func FileUpload(c *gin.Context) {
 
 	filename := header.Filename
 
-	err = service.UploadFile(filename, file)
+	correctFileName, err := service.UploadFile(filename, file)
 	if err != nil {
 		log.Println("Upload file: " + err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Smth wrong in get file on server",
+			"message": "Incorrect file",
 		})
 		return
 	}
 
-	filepath := "http://localhost:8080/file/" + filename
+	filepath := "http://localhost:8080/file/" + correctFileName
 	c.JSON(http.StatusOK, gin.H{
 		"filepath": filepath,
 	})

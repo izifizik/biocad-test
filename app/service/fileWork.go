@@ -3,71 +3,65 @@ package service
 import (
 	"errors"
 	"io"
+	"log"
 	"mime/multipart"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 )
 
-func UploadFile(filename string, file multipart.File ) error {
+func UploadFile(filename string, file multipart.File) (string, error) {
 	newFileName, err := CheckName(filename)
 	if err != nil {
-		return err
+		return newFileName, err
 	}
 	out, err := os.Create("app/public/" + newFileName)
 	if err != nil {
-		return err
+		return newFileName, err
 	}
 	defer out.Close()
 
 	_, err = io.Copy(out, file)
 	if err != nil {
-		return err
+		return newFileName, err
 	}
-	return nil
+	return newFileName, nil
 }
 
-func CheckName(fullFileName string) (string, error) {
-	if _, err := os.Stat("./app/public/" + fullFileName); err != nil { // TODO: если уже есть то:
-		fileName := strings.Split(fullFileName, ".")
-
-		if fileName[1] != "txt" { // TODO: проверка на вход тхт файла
-			return fullFileName, errors.New("Bad request")
-		}
-
-		pattern := `\((\d){0,}\)`
-
-		fileNameArr := []string { // TODO: если итерироваться по строчкам то каждая буква будет иметь (*)
-			fileName[0],
-		}
-
-		for _, a := range fileNameArr {
-			ok, err := regexp.Match(pattern, []byte(a))
-			if err != nil {
-				return fullFileName, errors.New("Error with mach in regular")
-			}
-			if ok { // TODO: если есть соответствие
-				split := strings.Split(fileName[0], "(")
-				split2 := strings.Split(split[1], ")")
-				num, err := strconv.Atoi(split2[0])
-				if err != nil {
-					return fullFileName, errors.New("Error with atoi")
-				}
-				num++
-				return split[0] + "(" + strconv.Itoa(num) + ").txt", nil
-			}
-			return fileName[0] + "(1).txt", nil
-		}
-
-	} else if os.IsNotExist(err) { // TODO: если нет то:
-		s := strings.Split(fullFileName, ".")
-		if s[1] != "txt" {
-			return fullFileName, errors.New("Bad extension")
-		}
-		return fullFileName, nil
-	} else {
-		return "", err //файл может существовать, а может и не существовать.
+func CheckName(fileName string) (string, error) {
+	if !strings.ContainsAny(fileName, ".txt") { // TODO: Если не тхт
+		log.Println("Не тхт")
+		return fileName, errors.New("File is not a txt file")
 	}
-	return fullFileName, errors.New("Hz kak on mojet byt'")
+
+	if _, err := os.Stat("/app/public" + fileName); err == nil { // TODO: если не существует то:
+		log.Println("Не существует")
+		return fileName, nil
+	}
+	log.Println("Существует")
+
+	if !strings.ContainsAny(fileName, "()") { // TODO: если существует но нет скобок с повторениями (1), (2)....
+		split := strings.Split(fileName, ".")
+		newFileName, err := CheckName(split[0] + "(1)" + ".txt")
+		if err != nil {
+			return fileName, err
+		}
+		return newFileName, nil
+	}
+
+	s1 := strings.Index(fileName, "(")
+	s2 := strings.Index(fileName, ")")
+	number := fileName[s1+1 : s2]
+	num, err := strconv.Atoi(number)
+	if err != nil {
+		return fileName, err
+	}
+	num++
+
+	newFileName, err := CheckName(fileName[:s1] + "(" + strconv.Itoa(num) + ")" + fileName[s2+1:])
+	if err != nil {
+		return fileName, err
+	}
+
+	return newFileName, nil
 }
