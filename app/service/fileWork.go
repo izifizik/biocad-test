@@ -34,34 +34,35 @@ func CheckName(fileName string) (string, error) {
 		return fileName, errors.New("File is not a txt file")
 	}
 
-	if _, err := os.Stat("/app/public" + fileName); err == nil { // TODO: если не существует то:
-		log.Println("Не существует")
-		return fileName, nil
-	}
-	log.Println("Существует")
+	for {
+		ok := statCheck(fileName)
+		if ok {
+			break
+		}
+		if !strings.ContainsAny(fileName, "()") { // TODO: если существует но нет скобок с повторениями (1), (2)....
+			split := strings.Split(fileName, ".")
+			fileName = split[0] + "(1)" + ".txt"
+			continue
+		}
 
-	if !strings.ContainsAny(fileName, "()") { // TODO: если существует но нет скобок с повторениями (1), (2)....
-		split := strings.Split(fileName, ".")
-		newFileName, err := CheckName(split[0] + "(1)" + ".txt")
+		s1 := strings.Index(fileName, "(")
+		s2 := strings.Index(fileName, ")")
+		number := fileName[s1+1 : s2]
+		num, err := strconv.Atoi(number)
 		if err != nil {
 			return fileName, err
 		}
-		return newFileName, nil
+		num++
+
+		fileName = fileName[:s1] + "(" + strconv.Itoa(num) + ")" + fileName[s2+1:]
 	}
 
-	s1 := strings.Index(fileName, "(")
-	s2 := strings.Index(fileName, ")")
-	number := fileName[s1+1 : s2]
-	num, err := strconv.Atoi(number)
-	if err != nil {
-		return fileName, err
-	}
-	num++
+	return fileName, nil
+}
 
-	newFileName, err := CheckName(fileName[:s1] + "(" + strconv.Itoa(num) + ")" + fileName[s2+1:])
-	if err != nil {
-		return fileName, err
+func statCheck(fileName string) bool {
+	if _, err := os.Open("./app/public/" + fileName); err != nil {
+		return true
 	}
-
-	return newFileName, nil
+	return false
 }

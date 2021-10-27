@@ -17,18 +17,4 @@ func GetPage(c *gin.Context) {
 		log.Println(err.Error())
 		return
 	}
-
-	for {
-		messageType, p, err := conn.ReadMessage()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		if err := conn.WriteMessage(messageType, p); err != nil {
-			log.Println(err)
-			return
-		}
-		log.Println("message is send back")
-	}
 }
