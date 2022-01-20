@@ -1,5 +1,11 @@
 # Biocad test task
 
+## Stack of technologies
+
+* Go 1.17
+* Mongodb
+* Docker
+
 ## Handlers
 ### GET /
 * Open a page where you can select and send a file to server
@@ -9,12 +15,6 @@
 * Upload file to server
 ### POST /delete
 * Delete file from server
-
-## Stack of technologies
-
-* Go 1.17
-* Mongodb
-* Docker
 
 ## Example of a .env file
 ```
