@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"Biocad/app/service"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
@@ -17,4 +18,6 @@ func GetPage(c *gin.Context) {
 		log.Println(err.Error())
 		return
 	}
+
+	service.Write(conn)
 }

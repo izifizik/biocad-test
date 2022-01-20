@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"Biocad/app/database"
 	"Biocad/app/service"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -17,7 +18,6 @@ func FileUpload(c *gin.Context) {
 		})
 		return
 	}
-
 	filename := header.Filename
 
 	correctFileName, err := service.UploadFile(filename, file)
@@ -28,6 +28,16 @@ func FileUpload(c *gin.Context) {
 		})
 		return
 	}
+
+	err = service.InsertByFileName(correctFileName)
+	if err != nil {
+		log.Println("Mongo insert error: " + err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error with db",
+		})
+		return
+	}
+	service.WriteToWs("ADD", correctFileName)
 
 	filepath := "http://localhost:8080/file/" + correctFileName
 	c.JSON(http.StatusOK, gin.H{
@@ -58,8 +68,13 @@ func FileDelete(c *gin.Context) {
 		return
 	}
 
-	filepath := "http://localhost:8080/file/" + jsonInput.FileName
-	c.JSON(http.StatusOK, gin.H{
-		"filepath": filepath,
-	})
+	err = database.DeleteFile(jsonInput.FileName)
+	if err != nil {
+		log.Println("Mongo delete error: " + err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error with db",
+		})
+		return
+	}
+	service.WriteToWs("DELETE", jsonInput.FileName)
 }

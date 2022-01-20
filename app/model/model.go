@@ -1,6 +1,12 @@
 package model
 
-type Data struct {
-	Type string `json:"type"`
-	Name string `json:"name"`
+type Message struct {
+	Type     string
+	FileName string
+}
+
+type File struct {
+	Filename string   `bson:"_id"`
+	Header   string   `bson:"header"`
+	Data     []string `bson:"data"`
 }

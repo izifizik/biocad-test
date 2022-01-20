@@ -29,7 +29,7 @@ func UploadFile(filename string, file multipart.File) (string, error) {
 }
 
 func CheckName(fileName string) (string, error) {
-	if !strings.ContainsAny(fileName, ".txt") { // TODO: Если не тхт
+	if !strings.ContainsAny(fileName, ".txt") { // Если не тхт
 		log.Println("Не тхт")
 		return fileName, errors.New("File is not a txt file")
 	}
@@ -39,7 +39,7 @@ func CheckName(fileName string) (string, error) {
 		if ok {
 			break
 		}
-		if !strings.ContainsAny(fileName, "()") { // TODO: если существует но нет скобок с повторениями (1), (2)....
+		if !strings.ContainsAny(fileName, "()") { // если существует, но нет скобок с повторениями (1), (2)....
 			split := strings.Split(fileName, ".")
 			fileName = split[0] + "(1)" + ".txt"
 			continue
@@ -47,12 +47,14 @@ func CheckName(fileName string) (string, error) {
 
 		s1 := strings.Index(fileName, "(")
 		s2 := strings.Index(fileName, ")")
+
 		number := fileName[s1+1 : s2]
 		num, err := strconv.Atoi(number)
 		if err != nil {
 			return fileName, err
 		}
-		num++
+
+		num += 1
 
 		fileName = fileName[:s1] + "(" + strconv.Itoa(num) + ")" + fileName[s2+1:]
 	}
@@ -66,3 +68,5 @@ func statCheck(fileName string) bool {
 	}
 	return false
 }
+
+

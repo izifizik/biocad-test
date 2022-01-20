@@ -1,6 +1,8 @@
 package main
 
 import (
+	"Biocad/app/config"
+	"Biocad/app/database"
 	"Biocad/app/handlers"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -8,6 +10,9 @@ import (
 )
 
 func main() {
+	config.Load()
+	database.Connect()
+
 	app := gin.Default()
 	gin.SetMode(gin.DebugMode)
 	app.LoadHTMLGlob("app/template/*")
