@@ -1,4 +1,14 @@
-#Biocad test task
+# Biocad test task
+
+## Handlers
+### GET /
+* Open a page where you can select and send a file to server
+### GET /ws
+* The page where you can see what happen with the files
+### POST /upload
+* Upload file to server
+### POST /delete
+* Delete file from server
 
 ## Stack of technologies
 
