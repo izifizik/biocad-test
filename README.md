@@ -30,5 +30,5 @@ MONGO_URL="mongo url"
 ```
 docker build -t "image name" .
 docker run --name "container name" -p "local port":"container port" -d "image name"
-docker exec -it containerID /bin/sh - for go incide container
+docker exec -it containerID /bin/sh - for go inside container
 ```
