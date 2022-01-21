@@ -1,4 +1,12 @@
 # Biocad test task
+Application that traks any changes with files on the server \
+The app can also upload files to server and delete from it \
+As for uploading files, server will not rewrite file with equal filename.\
+\
+Explain:
+* If server don't have a file "filename.txt" - server save file like "filename.txt"
+* If server have a file "filename.txt" - server save file like "filename(1).txt"
+* If server have many file ("filename.txt", "filename(1).txt") - server save file like "filename(2).txt" and etc.
 
 ## Stack of technologies
 
@@ -10,7 +18,7 @@
 ### GET /
 * Open a page where you can select and send a file to server
 ### GET /ws
-* The page where you can see what happen with the files
+* The handler where you can see what happen with the files (upload/delete) using websocket connection
 ### POST /upload
 * Upload file to server
 ### POST /delete
